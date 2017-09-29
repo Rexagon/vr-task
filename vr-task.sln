@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vr-task", "vr-task\vr-task.vcxproj", "{CF66859B-0085-4D11-84FF-70595EBFAD6D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Debug|x64.ActiveCfg = Debug|x64
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Debug|x64.Build.0 = Debug|x64
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Debug|x86.ActiveCfg = Debug|Win32
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Debug|x86.Build.0 = Debug|Win32
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Release|x64.ActiveCfg = Release|x64
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Release|x64.Build.0 = Release|x64
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Release|x86.ActiveCfg = Release|Win32
+		{CF66859B-0085-4D11-84FF-70595EBFAD6D}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D370D25F-5CD1-4F97-82B7-A98D7B8C1813}
+	EndGlobalSection
+EndGlobal
