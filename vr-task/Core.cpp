@@ -102,6 +102,8 @@ sf::RenderWindow& Core::getWindow()
 
 void Core::handleEvents()
 {
+	Input::reset();
+
 	sf::Event e;
 	while (m_window.pollEvent(e)) {
 		switch (e.type) {
@@ -110,8 +112,8 @@ void Core::handleEvents()
 			break;
 			
 		case sf::Event::MouseMoved:
-			Input::m_mousePosition.x = static_cast<float>(e.mouseMove.x);
-			Input::m_mousePosition.y = static_cast<float>(e.mouseMove.y);
+			Input::m_currentCursorPosition.x = e.mouseMove.x;
+			Input::m_currentCursorPosition.y = e.mouseMove.y;
 			break;
 
 		case sf::Event::KeyPressed:

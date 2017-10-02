@@ -23,6 +23,7 @@ public:
 
 	static void setMousePosition(const vec2& pos);
 	static vec2 getMousePosition();
+	static vec2 getMouseDeltaPosition();
 
 	static void setCursorVisible(bool visible);
 
@@ -35,5 +36,6 @@ private:
 	static std::bitset<MouseButton::ButtonCount> m_currentMouseStates;
 	static std::bitset<MouseButton::ButtonCount> m_lastMouseStates;
 
-	static vec2 m_mousePosition;
+	static sf::Vector2i m_currentCursorPosition;
+	static sf::Vector2i m_lastCursorPosition;
 };

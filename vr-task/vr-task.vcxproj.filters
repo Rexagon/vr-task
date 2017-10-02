@@ -68,6 +68,10 @@
     <ClCompile Include="GameObject.cpp">
       <Filter>Core\GameObjects</Filter>
     </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Core\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="Math.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -99,6 +103,9 @@
     </Filter>
     <Filter Include="Core\GameObjects">
       <UniqueIdentifier>{67550204-85d3-45ba-8200-83c2ddd2e9cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Physics">
+      <UniqueIdentifier>{eff760dd-ddd2-40af-9eaf-a784a90bb832}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -176,6 +183,9 @@
     </ClInclude>
     <ClInclude Include="GameObjectRenderer.h">
       <Filter>Core\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="World.h">
+      <Filter>Core\Physics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

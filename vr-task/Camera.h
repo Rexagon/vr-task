@@ -27,6 +27,10 @@ public:
 	void setZRange(const vec2& zRange);
 	vec2 getZRange();
 
+	vec3 getDirectionFront() override;
+	vec3 getDirectionRight() override;
+	vec3 getDirectionUp() override;
+
 protected:
 	virtual void updateProjection() = 0;
 

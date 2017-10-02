@@ -19,13 +19,18 @@ void Game::onInit()
 
 	m_shogiban.setMesh(ResourceManager::get<Mesh>("shogiban"));
 	m_shogiban.setDiffuseTexture(ResourceManager::get<sf::Texture>("shogiban"));
+	m_shogiban.getDiffuseTexture()->setSmooth(true);
 
 	m_island.setMesh(ResourceManager::get<Mesh>("island"));
 	m_island.setDiffuseTexture(ResourceManager::get<sf::Texture>("island"));
+	m_island.getDiffuseTexture()->setSmooth(true);
 	m_island.setPosition(0.0f, -10.0f, 0.0f);
 	
 	m_table.setMesh(ResourceManager::get<Mesh>("table"));
 	m_table.setDiffuseTexture(ResourceManager::get<sf::Texture>("table"));
+	m_table.getDiffuseTexture()->setSmooth(true);
+
+	m_camera->setPosition(0.0f, 20.0f, 40.0f);
 }
 
 void Game::onClose()
@@ -42,33 +47,32 @@ void Game::onUpdate(const float dt)
 
 	vec3 vec(0.0f, 0.0f, 0.0f);
 	if (Input::getKey(Key::W)) {
-		vec.z = -1.0f;
+		vec += m_camera->getDirectionFront();
 	}
 	else if (Input::getKey(Key::S)) {
-		vec.z = 1.0f;
+		vec -= m_camera->getDirectionFront();
 	}
 
-	if (Input::getKey(Key::A)) {
-		vec.x = -1.0f;
+	if (Input::getKey(Key::D)) {
+		vec += m_camera->getDirectionRight();
 	}
-	else if (Input::getKey(Key::D)) {
-		vec.x = 1.0f;
+	else if (Input::getKey(Key::A)) {
+		vec -= m_camera->getDirectionRight();
 	}
 
-	if (Input::getKey(Key::R)) {
-		vec.y = 1.0f;
+	if (Input::getKey(Key::Space)) {
+		vec += m_camera->getDirectionUp();
 	}
-	else if (Input::getKey(Key::F)) {
-		vec.y = -1.0f;
+	else if (Input::getKey(Key::C)) {
+		vec -= m_camera->getDirectionUp();
 	}
 
 	m_camera->move(vec * dt * 20.0f);
 
-	if (Input::getKey(Key::Q)) {
-		m_camera->rotate(0, dt * 10.0f, 0);
-	}
-	else if (Input::getKey(Key::E)) {
-		m_camera->rotate(0, -dt * 10.0f, 0);
+	vec2 mouseDelta = Input::getMouseDeltaPosition();
+	if (mouseDelta != vec2()) {
+		m_camera->rotate(0.0f, -mouseDelta.x * dt, 0.0f);
+		m_camera->rotate(-mouseDelta.y * dt, 0.0f, 0.0f);
 	}
 }
 

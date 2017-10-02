@@ -1,20 +1,21 @@
 #include "Input.h"
 
+#include "Core.h"
+
 std::bitset<Key::KeyCount> Input::m_currentKeyStates;
 std::bitset<Key::KeyCount> Input::m_lastKeyStates;
 
 std::bitset<MouseButton::ButtonCount> Input::m_currentMouseStates;
 std::bitset<MouseButton::ButtonCount> Input::m_lastMouseStates;
 
-vec2 Input::m_mousePosition = vec2(0.0f, 0.0f);
+sf::Vector2i Input::m_currentCursorPosition = sf::Mouse::getPosition();
+sf::Vector2i Input::m_lastCursorPosition = sf::Mouse::getPosition();
 
 void Input::reset()
 {
 	m_lastKeyStates = m_currentKeyStates;
 	m_lastMouseStates = m_currentMouseStates;
-
-	m_currentKeyStates.reset();
-	m_currentMouseStates.reset();
+	m_lastCursorPosition = m_currentCursorPosition;
 }
 
 bool Input::getKey(Key keyCode)
@@ -83,15 +84,23 @@ bool Input::getMouseUp(MouseButton mouseCode)
 
 void Input::setMousePosition(const vec2 & pos)
 {
-	
+	m_currentCursorPosition = sf::Vector2i(pos.x, pos.y);
+	sf::Mouse::setPosition(m_currentCursorPosition, Core::getWindow());
 }
 
 vec2 Input::getMousePosition()
 {
-	return m_mousePosition;
+	return vec2(static_cast<float>(m_currentCursorPosition.x), 
+		static_cast<float>(m_currentCursorPosition.y));
+}
+
+vec2 Input::getMouseDeltaPosition()
+{
+	sf::Vector2i temp = m_currentCursorPosition - m_lastCursorPosition;
+	return vec2(static_cast<float>(temp.x), static_cast<float>(temp.y));
 }
 
 void Input::setCursorVisible(bool visible)
 {
-	
+	Core::getWindow().setMouseCursorVisible(visible);
 }

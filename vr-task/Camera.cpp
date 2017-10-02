@@ -55,7 +55,10 @@ mat4 Camera::getPositionMatrix()
 mat4 Camera::getRotationMatrix()
 {
 	if (m_rotationChanged) {
-		m_rotationMatrix = glm::mat4_cast(quat(-m_rotation));
+		m_rotationMatrix = mat4(1.0f);
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, getDirectionRight());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, getDirectionUp());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, getDirectionFront());
 		m_rotationChanged = false;
 	}
 
@@ -103,6 +106,29 @@ void Camera::setZRange(const vec2 & zRange)
 vec2 Camera::getZRange()
 {
 	return m_zRange;
+}
+
+vec3 Camera::getDirectionFront()
+{
+	vec4 temp(0.0f, 0.0f, -1.0f, 1.0f);
+	temp = glm::mat4_cast(quat(m_rotation)) * temp;
+	temp /= temp.w;
+	vec3 result(temp.x, temp.y, temp.z);
+	return glm::normalize(result);
+}
+
+vec3 Camera::getDirectionRight()
+{
+	return glm::normalize(glm::cross(getDirectionFront(), vec3(0.0f, 1.0f, 0.0f)));
+}
+
+vec3 Camera::getDirectionUp()
+{
+	vec3 directionFront = getDirectionFront();
+
+	return glm::normalize(
+		glm::cross(glm::cross(directionFront, vec3(0.0f, 1.0f, 0.0f)), directionFront)
+	);
 }
 
 

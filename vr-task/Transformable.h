@@ -34,6 +34,10 @@ public:
 	void setScale(const vec3& s);
 	vec3 getScale() const;
 
+	virtual vec3 getDirectionFront();
+	virtual vec3 getDirectionRight();
+	virtual vec3 getDirectionUp();
+
 protected:
 	mat4 m_transformation;
 

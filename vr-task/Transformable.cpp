@@ -28,7 +28,10 @@ mat4 Transformable::getPositionMatrix()
 mat4 Transformable::getRotationMatrix()
 {
 	if (m_rotationChanged) {
-		m_rotationMatrix = glm::mat4_cast(quat(m_rotation));
+		m_rotationMatrix = mat4(1.0f);
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.x, getDirectionRight());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.y, getDirectionUp());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.z, getDirectionFront());
 		m_rotationChanged = false;
 	}
 
@@ -144,4 +147,27 @@ void Transformable::setScale(const vec3 & s)
 vec3 Transformable::getScale() const
 {
 	return m_scale;
+}
+
+vec3 Transformable::getDirectionFront()
+{
+	vec4 temp(0.0f, 0.0f, -1.0f, 1.0f);
+	temp = m_rotationMatrix * temp;
+	temp /= temp.w;
+	vec3 result(temp.x, temp.y, temp.z);
+	return glm::normalize(result);
+}
+
+vec3 Transformable::getDirectionRight()
+{
+	return glm::normalize(glm::cross(getDirectionFront(), vec3(0.0f, 1.0f, 0.0f)));
+}
+
+vec3 Transformable::getDirectionUp()
+{
+	vec3 directionFront = getDirectionFront();
+
+	return glm::normalize(
+		glm::cross(glm::cross(directionFront, vec3(0.0f, 1.0f, 0.0f)), directionFront)
+	);
 }

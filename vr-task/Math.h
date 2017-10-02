@@ -22,3 +22,5 @@ using uvec4 = glm::uvec4;
 using mat4 = glm::mat4;
 
 using quat = glm::quat;
+
+quat createRotation(const vec3& axis, float angle);
