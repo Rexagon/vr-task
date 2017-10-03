@@ -1,0 +1,203 @@
+#include "VRsystem.h"
+
+#include "Log.h"
+
+vr::IVRSystem* VRsystem::m_system = nullptr;
+std::array<vr::TrackedDevicePose_t, vr::k_unMaxTrackedDeviceCount> VRsystem::m_trackedDevicePoses;
+std::array<mat4, vr::k_unMaxTrackedDeviceCount> VRsystem::m_trackedDeviceMatrices;
+std::array<std::bitset<vr::k_EButton_Max>, VRsystem::DEVICE_COUNT> VRsystem::m_currentButtonsState;
+std::array<std::bitset<vr::k_EButton_Max>, VRsystem::DEVICE_COUNT> VRsystem::m_lastButtonsState;
+
+void VRsystem::init()
+{
+	vr::EVRInitError error = vr::VRInitError_None;
+	m_system = vr::VR_Init(&error, vr::VRApplication_Scene);
+
+	if (error != vr::VRInitError_None) {
+		throw std::runtime_error("Unable to initialize VR");
+	}
+
+	updateControllersInfo();
+}
+
+void VRsystem::close()
+{
+	if (m_system) {
+		vr::VR_Shutdown();
+		m_system = nullptr;
+	}
+}
+
+void VRsystem::reset()
+{
+	for (size_t i = 0; i < DEVICE_COUNT; ++i) {
+		m_lastButtonsState[i] = m_currentButtonsState[i];
+	}
+}
+
+void VRsystem::handleEvents()
+{
+	vr::VREvent_t event;
+	while (m_system->PollNextEvent(&event, sizeof(event))) {
+		processEvent(event);
+	}
+
+	for (size_t i = 0; i < DEVICE_COUNT; ++i) {
+		if (!m_system->IsTrackedDeviceConnected(i)) {
+			continue;
+		}
+
+		vr::TrackedDevicePose_t& devicePose = m_trackedDevicePoses[i];
+
+		vr::ETrackedDeviceClass trackedDeviceClass = vr::VRSystem()->GetTrackedDeviceClass(i);
+		switch (trackedDeviceClass)
+		{
+		case vr::TrackedDeviceClass_Invalid:
+			break;
+
+		case vr::TrackedDeviceClass_HMD:
+		case vr::TrackedDeviceClass_Controller:
+		{
+			vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(vr::TrackingUniverseStanding, 0, &devicePose, 1);
+
+			m_trackedDeviceMatrices[i] = toGlmMatrix(devicePose.mDeviceToAbsoluteTracking);
+
+			auto& m = devicePose.mDeviceToAbsoluteTracking;
+
+			Log::write(m.m[0][3], m.m[1][3], m.m[2][3]);
+		}
+			break;
+
+		case vr::TrackedDeviceClass_GenericTracker:
+			break;
+		case vr::TrackedDeviceClass_TrackingReference:
+			break;
+		case vr::TrackedDeviceClass_DisplayRedirect:
+			break;
+		default:
+			break;
+		}
+	}
+}
+
+bool VRsystem::getButton(DeviceIndex device, Button button)
+{
+	return m_currentButtonsState[device][button];
+}
+
+bool VRsystem::getButtonDown(DeviceIndex device, Button button)
+{
+	return m_currentButtonsState[device][button] && 
+		!m_lastButtonsState[device][button];
+}
+
+bool VRsystem::getButtonUp(DeviceIndex device, Button button)
+{
+	return !m_currentButtonsState[device][button] && 
+		m_lastButtonsState[device][button];
+}
+
+vec3 VRsystem::getDevicePosition(DeviceIndex device)
+{
+	const mat4& m = m_trackedDeviceMatrices[device];
+	vec3 result;
+	result.x = m[0][3];
+	result.y = m[1][3];
+	result.z = m[2][3];
+	return result;
+}
+
+vec3 VRsystem::getDeviceRotation(DeviceIndex device)
+{
+	const mat4& m = m_trackedDeviceMatrices[device];
+
+	quat rotation;
+	rotation.w = sqrt(fmax(0, 1.0 + m[0][0] + m[1][1] + m[2][2])) / 2.0f;
+	rotation.x = sqrt(fmax(0, 1.0 + m[0][0] - m[1][1] - m[2][2])) / 2.0f;
+	rotation.y = sqrt(fmax(0, 1.0 - m[0][0] + m[1][1] - m[2][2])) / 2.0f;
+	rotation.z = sqrt(fmax(0, 1.0 - m[0][0] - m[1][1] + m[2][2])) / 2.0f;
+
+	rotation.x = copysign(rotation.x, m[2][1] - m[1][2]);
+	rotation.y = copysign(rotation.y, m[0][2] - m[2][0]);
+	rotation.z = copysign(rotation.z, m[1][0] - m[0][1]);
+
+	return glm::eulerAngles(rotation);
+}
+
+mat4 VRsystem::getDeviceTransformation(DeviceIndex device)
+{
+	return m_trackedDeviceMatrices[device];
+}
+
+void VRsystem::updateControllersInfo()
+{
+	for (int i = 0; i < vr::k_unMaxTrackedDeviceCount; i++)
+	{
+		vr::TrackedDeviceClass deviceClass = vr::VRSystem()->GetTrackedDeviceClass(i);
+
+		switch (deviceClass)
+		{
+		case vr::TrackedDeviceClass_Controller:
+			Log::write(i, "controller");
+		break;
+
+		case vr::TrackedDeviceClass_HMD:
+			Log::write(i, "hmd");
+			break;
+
+		case vr::TrackedDeviceClass_Invalid:
+			Log::write(i, "invalid");
+			break;
+		}
+	}
+}
+
+bool VRsystem::processEvent(const vr::VREvent_t & event)
+{
+	switch (event.eventType) {
+	case vr::VREvent_TrackedDeviceActivated:
+		Log::write("Device activated.", event.trackedDeviceIndex);
+		updateControllersInfo();
+		break;
+
+	case vr::VREvent_TrackedDeviceDeactivated:
+		Log::write("Device deactivated.", event.trackedDeviceIndex);
+		updateControllersInfo();
+		break;
+
+	case vr::VREvent_ButtonPress:
+		m_currentButtonsState[event.trackedDeviceIndex].set(event.data.controller.button, true);
+		//TODO: handle button press
+		break;
+
+	case vr::VREvent_ButtonUnpress:
+		m_currentButtonsState[event.trackedDeviceIndex].set(event.data.controller.button, false);
+		//TODO: handle button unpress
+		break;
+	}
+
+	return true;
+}
+
+mat4 VRsystem::toGlmMatrix(const vr::HmdMatrix34_t & m)
+{
+	mat4 result(1.0f);
+
+	result[0][0] = m.m[0][0];
+	result[1][0] = m.m[1][0];
+	result[2][0] = m.m[2][0];
+
+	result[0][1] = m.m[0][1];
+	result[1][1] = m.m[1][1];
+	result[2][1] = m.m[2][1];
+
+	result[0][2] = m.m[0][2];
+	result[1][2] = m.m[1][2];
+	result[2][2] = m.m[2][2];
+
+	result[0][3] = m.m[0][3];
+	result[1][3] = m.m[1][3];
+	result[2][3] = m.m[2][3];
+
+	return result;
+}

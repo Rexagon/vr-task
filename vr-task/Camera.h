@@ -1,5 +1,7 @@
 #pragma once
 
+#include "VRsystem.h"
+
 #include "Transformable.h"
 
 class Camera : public Transformable
@@ -84,4 +86,17 @@ private:
 	float m_right;
 	float m_bottom;
 	float m_top;
+};
+
+
+class VRCamera : public Camera
+{
+public:
+	VRCamera(vr::EVREye eye);
+	VRCamera(vr::EVREye eye, float nearZ, float farZ);
+
+	void updateProjection() override;
+
+private:
+	vr::EVREye m_eye;
 };

@@ -14,7 +14,10 @@ public:
 	void onResize(const vec2& windowSize) override;
 
 private:
-	std::unique_ptr<PerspectiveCamera> m_camera;
+	sf::RenderTexture m_eyeTexture;
+
+	std::unique_ptr<VRCamera> m_leftEye;
+	std::unique_ptr<VRCamera> m_rightEye;
 
 	std::unique_ptr<SkyboxRenderer> m_skyboxRenderer;
 	std::unique_ptr<GameObjectRenderer> m_gameObjectRenderer;

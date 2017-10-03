@@ -15,6 +15,8 @@
 #include "GameObjectRenderer.h"
 #include "SkyboxRenderer.h"
 
+#include "VRsystem.h"
+
 #include "World.h"
 
 #include "Input.h"

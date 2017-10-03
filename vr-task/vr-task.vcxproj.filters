@@ -71,7 +71,12 @@
     <ClCompile Include="World.cpp">
       <Filter>Core\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="Math.cpp" />
+    <ClCompile Include="Math.cpp">
+      <Filter>Core\Stuff</Filter>
+    </ClCompile>
+    <ClCompile Include="VRsystem.cpp">
+      <Filter>Core\VR</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Core">
@@ -106,6 +111,9 @@
     </Filter>
     <Filter Include="Core\Physics">
       <UniqueIdentifier>{eff760dd-ddd2-40af-9eaf-a784a90bb832}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\VR">
+      <UniqueIdentifier>{c6dab3f5-72e4-44b2-a45f-5e71b0cf24b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -186,6 +194,9 @@
     </ClInclude>
     <ClInclude Include="World.h">
       <Filter>Core\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="VRsystem.h">
+      <Filter>Core\VR</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

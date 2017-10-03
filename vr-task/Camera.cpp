@@ -56,9 +56,9 @@ mat4 Camera::getRotationMatrix()
 {
 	if (m_rotationChanged) {
 		m_rotationMatrix = mat4(1.0f);
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, getDirectionRight());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, getDirectionUp());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, getDirectionFront());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, vec3(1, 0, 0));
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, vec3(0, 1, 0));
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, vec3(0, 0, 1));
 		m_rotationChanged = false;
 	}
 
@@ -228,4 +228,32 @@ float IsometricCamera::getTopDimension() const
 void IsometricCamera::updateProjection()
 {
 	m_projection = glm::ortho(m_left, m_right, m_bottom, m_top, m_zRange.x, m_zRange.y);
+}
+
+
+//
+VRCamera::VRCamera(vr::EVREye eye) :
+	m_eye(eye), Camera()
+{
+}
+
+VRCamera::VRCamera(vr::EVREye eye, float nearZ, float farZ) :
+	m_eye(eye), Camera(nearZ, farZ)
+{
+}
+
+void VRCamera::updateProjection()
+{
+	vr::IVRSystem* system = vr::VRSystem();
+
+	if (system) {
+		vr::HmdMatrix44_t mat = system->GetProjectionMatrix(m_eye, m_zRange.x, m_zRange.y);
+
+		m_projection = mat4(
+			mat.m[0][0], mat.m[1][0], mat.m[2][0], mat.m[3][0],
+			mat.m[0][1], mat.m[1][1], mat.m[2][1], mat.m[3][1],
+			mat.m[0][2], mat.m[1][2], mat.m[2][2], mat.m[3][2],
+			mat.m[0][3], mat.m[1][3], mat.m[2][3], mat.m[3][3]
+		);
+	}
 }

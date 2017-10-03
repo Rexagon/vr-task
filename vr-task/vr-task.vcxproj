@@ -110,6 +110,7 @@
     <ClCompile Include="TextureFactory.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Transformable.cpp" />
+    <ClCompile Include="VRsystem.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +139,7 @@
     <ClInclude Include="TextureFactory.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="Transformable.h" />
+    <ClInclude Include="VRsystem.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

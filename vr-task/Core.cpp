@@ -17,6 +17,7 @@ void Core::init()
 	
 	ResourceManager::init();
 	FileManager::init<DefaultFileSystem>();
+	VRsystem::init();
 
 	sf::ContextSettings settings;
 	settings.majorVersion = 3;
@@ -48,6 +49,7 @@ void Core::close()
 	SceneManager::close();
 	ResourceManager::close();
 	FileManager::close();
+	VRsystem::close();
 	m_window.close();
 
 	m_isRunning = false;
@@ -69,6 +71,7 @@ void Core::run()
 
 		// Handle window and keyboard events
 		handleEvents();
+		VRsystem::handleEvents();
 
 		Scene* currentScene;
 
