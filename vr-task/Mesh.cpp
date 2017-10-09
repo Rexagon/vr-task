@@ -21,6 +21,7 @@ void Mesh::init(const std::vector<vec3>& positions, const std::vector<unsigned i
 {
 	glBindVertexArray(m_VAO);
 
+	m_positionsNum = positions.size();
 	initAttribute(0, positions);
 	initIndices(indices);
 
@@ -32,6 +33,7 @@ void Mesh::init(const std::vector<vec3>& positions, const std::vector<vec2>& tex
 {
 	glBindVertexArray(m_VAO);
 
+	m_positionsNum = positions.size();
 	initAttribute(0, positions);
 	initAttribute(1, textureCoords);
 	initIndices(indices);
@@ -44,6 +46,7 @@ void Mesh::init(const std::vector<vec3>& positions, const std::vector<vec2>& tex
 {
 	glBindVertexArray(m_VAO);
 
+	m_positionsNum = positions.size();
 	initAttribute(0, positions);
 	initAttribute(1, textureCoords);
 	initAttribute(2, normals);
@@ -79,6 +82,16 @@ std::string Mesh::getName() const
 GLuint Mesh::getVAO() const
 {
 	return m_VAO;
+}
+
+GLuint Mesh::getPositionsBuffer() const
+{
+	return m_buffers[0];
+}
+
+unsigned int Mesh::getPositionsNum() const
+{
+	return m_positionsNum;
 }
 
 unsigned int Mesh::getIndicesNum() const

@@ -1,17 +1,48 @@
 #include "World.h"
 
+#include "Body.h"
+
 World::World(float g)
 {
-	m_configuration = std::make_unique<btDefaultCollisionConfiguration>();
+	m_broadphase = new btDbvtBroadphase();
 
-	m_dispatcher = std::make_unique<btCollisionDispatcher>(m_configuration.get());
-	m_broadphase = std::make_unique<btDbvtBroadphase>();
-	m_solver = std::make_unique<btSequentialImpulseConstraintSolver>();
+	m_configuration = new btDefaultCollisionConfiguration();
+	m_dispatcher = new btCollisionDispatcher(m_configuration);
+	m_solver = new btSequentialImpulseConstraintSolver();
 
-	m_dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(m_dispatcher.get(), 
-		m_broadphase.get(), m_solver.get(), m_configuration.get());
+	m_dynamicsWorld = std::make_unique<btDiscreteDynamicsWorld>(m_dispatcher,
+		m_broadphase, m_solver, m_configuration);
 
 	m_dynamicsWorld->setGravity(btVector3(0.0f, g, 0.0f));
+}
+
+World::~World()
+{
+	m_dynamicsWorld.reset(nullptr);
+	delete m_broadphase;
+	delete m_configuration;
+	delete m_dispatcher;
+	delete m_solver;
+}
+
+void World::update(const float dt)
+{
+	m_dynamicsWorld->stepSimulation(dt, 2);
+
+	for (auto& body : m_bodies) {
+		body->update(dt);
+	}
+}
+
+Body * World::createBody(Mesh * mesh, float mass)
+{
+	std::unique_ptr<Body> body = std::unique_ptr<Body>(new Body(this, mesh, mass));
+
+	addPhysicsData(body->getPhysicsData());
+
+	Body* result = body.get();
+	m_bodies.push_back(std::move(body));
+	return result;
 }
 
 void World::setGravity(float g)
@@ -35,6 +66,42 @@ void World::setGravity(const vec3 & direction)
 vec3 World::getGravity() const
 {
 	return m_gravity;
+}
+
+void World::removeBody(const Body * body)
+{
+	for (auto it = m_bodies.begin(); it != m_bodies.end(); ++it) {
+		if (it->get() == body) {
+			removePhysicsData((*it)->getPhysicsData());
+			m_bodies.erase(it);
+		}
+	}
+}
+
+bool World::hasBody(const Body * body) const
+{
+	for (const auto& b : m_bodies) {
+		if (b.get() == body) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void World::addPhysicsData(btRigidBody * physicsData)
+{
+	m_dynamicsWorld->addRigidBody(physicsData);
+}
+
+void World::updatePhysicsData(btRigidBody * physicsData)
+{
+	removePhysicsData(physicsData);
+	addPhysicsData(physicsData);
+}
+
+void World::removePhysicsData(btRigidBody * physicsData)
+{
+	m_dynamicsWorld->removeRigidBody(physicsData);
 }
 
 vec3 toGLM(const btVector3 & vec)

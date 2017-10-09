@@ -19,9 +19,13 @@ private:
 	std::unique_ptr<SkyboxRenderer> m_skyboxRenderer;
 	std::unique_ptr<BodyRenderer> m_bodyRenderer;
 
-	Body m_shogiban;
-	Body m_island;
-	Body m_table;
+	World m_world;
+
+	Body* m_shogiban;
+	Body* m_island;
+	Body* m_table;
+
+	std::vector<Body*> m_test;
 
 #ifdef VR_ENABLED
 

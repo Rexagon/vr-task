@@ -28,6 +28,9 @@ public:
 
 	GLuint getVAO() const;
 
+	GLuint getPositionsBuffer() const;
+	unsigned int getPositionsNum() const;
+
 	unsigned int getIndicesNum() const;
 
 private:
@@ -53,4 +56,5 @@ private:
 	std::vector<GLuint> m_buffers;
 
 	unsigned int m_indicesNum;
+	unsigned int m_positionsNum;
 };
