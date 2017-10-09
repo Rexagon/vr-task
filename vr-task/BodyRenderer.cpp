@@ -1,10 +1,10 @@
-#include "GameObjectRenderer.h"
+#include "BodyRenderer.h"
 
 #include "ResourceManager.h"
 
 #include "ShaderFactory.h"
 
-GameObjectRenderer::GameObjectRenderer(Camera * camera) :
+BodyRenderer::BodyRenderer(Camera * camera) :
 	Renderer(camera), m_meshShader(nullptr)
 {
 	ResourceManager::bind<ShaderFactory>("mesh", "shaders/mesh.vert", "shaders/mesh.frag");
@@ -20,12 +20,12 @@ GameObjectRenderer::GameObjectRenderer(Camera * camera) :
 	m_meshShader->unbind();
 }
 
-void GameObjectRenderer::draw(GameObject * gameObject)
+void BodyRenderer::draw(Body * gameObject)
 {
 	draw(gameObject, m_meshShader);
 }
 
-void GameObjectRenderer::draw(GameObject * gameObject, Shader * shader)
+void BodyRenderer::draw(Body * gameObject, Shader * shader)
 {
 	if (gameObject == nullptr || gameObject->getMesh() == nullptr ||
 		m_camera == nullptr) 

@@ -14,6 +14,29 @@ World::World(float g)
 	m_dynamicsWorld->setGravity(btVector3(0.0f, g, 0.0f));
 }
 
+void World::setGravity(float g)
+{
+	m_dynamicsWorld->setGravity(btVector3(0.0f, g, 0.0f));
+	m_gravity = vec3(0.0f, g, 0.0f);
+}
+
+void World::setGravity(float x, float y, float z)
+{
+	m_dynamicsWorld->setGravity(btVector3(x, y, z));
+	m_gravity = vec3(x, y, z);
+}
+
+void World::setGravity(const vec3 & direction)
+{
+	m_dynamicsWorld->setGravity(btVector3(direction.x, direction.y, direction.z));
+	m_gravity = direction;
+}
+
+vec3 World::getGravity() const
+{
+	return m_gravity;
+}
+
 vec3 toGLM(const btVector3 & vec)
 {
 	return vec3(vec.x(), vec.y(), vec.z());

@@ -11,6 +11,13 @@ class World
 public:
 	World(float g = -9.81f);
 
+	void setGravity(float g);
+	void setGravity(float x, float y, float z);
+	void setGravity(const vec3& direction);
+	vec3 getGravity() const;
+
+
+
 private:
 	std::unique_ptr<btDiscreteDynamicsWorld> m_dynamicsWorld;
 	std::unique_ptr<btCollisionDispatcher> m_dispatcher;
@@ -18,7 +25,7 @@ private:
 	std::unique_ptr<btSequentialImpulseConstraintSolver> m_solver;
 	std::unique_ptr<btDefaultCollisionConfiguration> m_configuration;
 
-	float m_g;
+	vec3 m_gravity;
 };
 
 vec3 toGLM(const btVector3& vec);

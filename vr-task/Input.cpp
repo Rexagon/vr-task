@@ -84,7 +84,7 @@ bool Input::getMouseUp(MouseButton mouseCode)
 
 void Input::setMousePosition(const vec2 & pos)
 {
-	m_currentCursorPosition = sf::Vector2i(pos.x, pos.y);
+	m_currentCursorPosition = sf::Vector2i(static_cast<int>(pos.x), static_cast<int>(pos.y));
 	sf::Mouse::setPosition(m_currentCursorPosition, Core::getWindow());
 }
 

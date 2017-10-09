@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <bitset>
+#include <vector>
 #include <array>
 
 #include <openvr.h>
@@ -20,6 +21,8 @@ public:
 	static void reset();
 	static void handleEvents();
 
+	static uvec2 getRenderTargetSize();
+
 	static bool getButton(DeviceIndex device, Button button);
 	static bool getButtonDown(DeviceIndex device, Button button);
 	static bool getButtonUp(DeviceIndex device, Button button);
@@ -28,11 +31,15 @@ public:
 	static vec3 getDeviceRotation(DeviceIndex device);
 	static mat4 getDeviceTransformation(DeviceIndex device);
 	
+	static bool isHmdConnected();
+	static DeviceIndex getHmdDeviceIndex();
+
+	static size_t getConnectedControllersCount();
+	static std::vector<DeviceIndex> getControllerDevicesIndices();
+
 private:
 	static void updateControllersInfo();
 	static bool processEvent(const vr::VREvent_t& event);
-
-	static mat4 toGlmMatrix(const vr::HmdMatrix34_t& m);
 
 	static const size_t DEVICE_COUNT = vr::k_unMaxTrackedDeviceCount;
 
@@ -43,4 +50,10 @@ private:
 
 	static std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_currentButtonsState;
 	static std::array<std::bitset<vr::k_EButton_Max>, DEVICE_COUNT> m_lastButtonsState;
+
+	static bool m_hmdConnected;
+	static DeviceIndex m_hmdDeviceIndex;
+	static std::vector<DeviceIndex> m_controllerDevicesIndices;
 };
+
+mat4 toGLM(const vr::HmdMatrix34_t& m);

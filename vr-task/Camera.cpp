@@ -56,9 +56,17 @@ mat4 Camera::getRotationMatrix()
 {
 	if (m_rotationChanged) {
 		m_rotationMatrix = mat4(1.0f);
+
+#ifdef VR_ENABLED
 		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, vec3(1, 0, 0));
 		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, vec3(0, 1, 0));
 		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, vec3(0, 0, 1));
+#else
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, getDirectionRight());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, getDirectionUp());
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, getDirectionFront());
+#endif // VR_ENABLED
+
 		m_rotationChanged = false;
 	}
 
@@ -240,6 +248,17 @@ VRCamera::VRCamera(vr::EVREye eye) :
 VRCamera::VRCamera(vr::EVREye eye, float nearZ, float farZ) :
 	m_eye(eye), Camera(nearZ, farZ)
 {
+}
+
+mat4 VRCamera::getPositionMatrix()
+{
+	if (m_positionChanged) {
+		m_positionMatrix = toGLM(vr::VRSystem()->GetEyeToHeadTransform(m_eye)) *
+			glm::translate(mat4(1.0f), -m_position);
+		m_positionChanged = false;
+	}
+
+	return m_positionMatrix;
 }
 
 void VRCamera::updateProjection()

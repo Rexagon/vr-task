@@ -14,15 +14,29 @@ public:
 	void onResize(const vec2& windowSize) override;
 
 private:
-	sf::RenderTexture m_eyeTexture;
+	void drawScene();
+
+	std::unique_ptr<SkyboxRenderer> m_skyboxRenderer;
+	std::unique_ptr<BodyRenderer> m_bodyRenderer;
+
+	Body m_shogiban;
+	Body m_island;
+	Body m_table;
+
+#ifdef VR_ENABLED
 
 	std::unique_ptr<VRCamera> m_leftEye;
 	std::unique_ptr<VRCamera> m_rightEye;
 
-	std::unique_ptr<SkyboxRenderer> m_skyboxRenderer;
-	std::unique_ptr<GameObjectRenderer> m_gameObjectRenderer;
+	std::unique_ptr<FrameBuffer> m_leftEyeBuffer;
+	std::unique_ptr<FrameBuffer> m_rightEyeBuffer;
 
-	GameObject m_shogiban;
-	GameObject m_island;
-	GameObject m_table;
+	sf::RectangleShape m_leftEyeDebugSprite;
+	sf::RectangleShape m_rightEyeDebugSprite;
+
+#else
+
+	std::unique_ptr<PerspectiveCamera> m_camera;
+
+#endif // VR_ENABLED
 };

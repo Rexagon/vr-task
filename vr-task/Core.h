@@ -12,8 +12,10 @@
 #include "ShaderFactory.h"
 #include "MeshFactory.h"
 
-#include "GameObjectRenderer.h"
 #include "SkyboxRenderer.h"
+#include "BodyRenderer.h"
+
+#include "FrameBuffer.h"
 
 #include "VRsystem.h"
 

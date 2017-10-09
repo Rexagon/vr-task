@@ -95,6 +95,8 @@ public:
 	VRCamera(vr::EVREye eye);
 	VRCamera(vr::EVREye eye, float nearZ, float farZ);
 
+	mat4 getPositionMatrix();
+
 	void updateProjection() override;
 
 private:
