@@ -30,8 +30,8 @@ void Game::onInit()
 	m_leftEye = std::make_unique<VRCamera>(vr::Eye_Left);
 	m_rightEye = std::make_unique<VRCamera>(vr::Eye_Right);
 
-	m_leftEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
-	m_rightEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
+	m_leftEyeBuffer = std::make_unique<FrameBuffer>(VRsystem::getRenderTargetSize());
+	m_rightEyeBuffer = std::make_unique<FrameBuffer>(VRsystem::getRenderTargetSize());
 
 	Log::write(m_leftEyeBuffer->getColorTexture().getSize().y);
 
@@ -131,6 +131,8 @@ void Game::onUpdate(const float dt)
 void Game::onDraw(const float dt)
 {
 #ifdef VR_ENABLED
+	sf::Vector2u renderTargetSize = m_leftEyeBuffer->getColorTexture().getSize();
+	glViewport(0, 0, static_cast<int>(renderTargetSize.x), static_cast<int>(renderTargetSize.y));
 
 	m_leftEyeBuffer->bind();
 	m_skyboxRenderer->setCamera(m_leftEye.get());
@@ -143,6 +145,9 @@ void Game::onDraw(const float dt)
 	m_bodyRenderer->setCamera(m_rightEye.get());
 	drawScene();
 	m_rightEyeBuffer->unbind();
+
+	sf::Vector2u windowSize = Core::getWindow().getSize();
+	glViewport(0, 0, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
 
 	static vr::Texture_t leftEyeTexture = {
 		(void*)(uintptr_t)m_leftEyeBuffer->getColorTexture().getNativeHandle(),
@@ -178,12 +183,9 @@ void Game::onDraw(const float dt)
 
 void Game::onResize(const vec2 & windowSize)
 {
-	glViewport(0, 0, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
-
 #ifdef VR_ENABLED
-	Core::getWindow().setView(sf::View(sf::FloatRect(0.f, 0.f, windowSize.x,
-		windowSize.y)));
 
+	Core::getWindow().setView(sf::View(sf::FloatRect(0.f, 0.f, windowSize.x, windowSize.y)));
 
 	sf::Vector2f halfSize = sf::Vector2f(static_cast<float>(windowSize.x) / 2.0f, static_cast<float>(windowSize.y));
 	
