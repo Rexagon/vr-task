@@ -1,7 +1,7 @@
 #include "Transformable.h"
 
 Transformable::Transformable() :
-	m_position(0.0f, 0.0f, 0.0f), m_rotation(0.0f, 0.0f, 0.0f), m_scale(1.0f, 1.0f, 1.0f),
+	m_position(0.0f, 0.0f, 0.0f), m_rotation(0.0f, 0.0f, 0.0f, 1.0f), m_scale(1.0f, 1.0f, 1.0f),
 	m_positionChanged(true), m_rotationChanged(true), m_scaleChanged(true)
 {
 }
@@ -28,10 +28,7 @@ mat4 Transformable::getPositionMatrix()
 mat4 Transformable::getRotationMatrix()
 {
 	if (m_rotationChanged) {
-		m_rotationMatrix = mat4(1.0f);
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.x, getDirectionRight());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.y, getDirectionUp());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, m_rotation.z, getDirectionFront());
+		m_rotationMatrix = glm::mat4_cast(m_rotation);
 		m_rotationChanged = false;
 	}
 
@@ -81,29 +78,40 @@ vec3 Transformable::getPosition() const
 
 void Transformable::rotate(float x, float y, float z)
 {
-	m_rotation += vec3(x, y, z);
+	m_rotation = quat(vec3(x, y, z)) * m_rotation;
+	m_rotation = glm::normalize(m_rotation);
 	m_rotationChanged = true;
 }
 
 void Transformable::rotate(const vec3 & eulerAngles)
 {
-	m_rotation += eulerAngles;
+	m_rotation = quat(eulerAngles) * m_rotation;
+	m_rotation = glm::normalize(m_rotation);
 	m_rotationChanged = true;
 }
 
 void Transformable::setRotation(float x, float y, float z)
 {
-	m_rotation = vec3(x, y, z);
+	m_rotation = quat(vec3(x, y, z));
+	m_rotation = glm::normalize(m_rotation);
 	m_rotationChanged = true;
 }
 
 void Transformable::setRotation(const vec3 & eulerAngles)
 {
-	m_rotation = eulerAngles;
+	m_rotation = quat(eulerAngles);
+	m_rotation = glm::normalize(m_rotation);
 	m_rotationChanged = true;
 }
 
-vec3 Transformable::getRotation() const
+void Transformable::setRotation(const quat & rotation)
+{
+	m_rotation = rotation;
+	m_rotation = glm::normalize(m_rotation);
+	m_rotationChanged = true;
+}
+
+quat Transformable::getRotation() const
 {
 	return m_rotation;
 }

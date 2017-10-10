@@ -5,22 +5,18 @@
 Camera::Camera() :
 	m_zRange(0.1f, 100.0f), m_projectionChanged(true)
 {
-	//m_rotation = glm::eulerAngles(quat(0, 0, 0, -1.0f));
-	Log::write(m_rotation);
+	m_rotation = glm::eulerAngles(quat(0, 0, 0, -1.0f));
 }
 
 Camera::Camera(float nearZ, float farZ) :
 	m_zRange(nearZ, farZ), m_projectionChanged(true)
 {
-	//m_rotation = glm::eulerAngles(quat(0, 0, 0, -1.0f));
-	Log::write(m_rotation);
+	m_rotation = glm::eulerAngles(quat(0, 0, 0, -1.0f));
 }
 
 Camera::Camera(const vec2& zRange) :
 	m_zRange(zRange)
 {
-	//m_rotation = glm::eulerAngles(quat(0, 0, 0, -1.0f));
-	Log::write(m_rotation);
 }
 
 mat4 Camera::getProjection()
@@ -55,18 +51,11 @@ mat4 Camera::getPositionMatrix()
 mat4 Camera::getRotationMatrix()
 {
 	if (m_rotationChanged) {
+		vec3 eulerRotation = glm::eulerAngles(m_rotation);
 		m_rotationMatrix = mat4(1.0f);
-
-#ifdef VR_ENABLED
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, vec3(1, 0, 0));
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, vec3(0, 1, 0));
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, vec3(0, 0, 1));
-#else
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.x, getDirectionRight());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.y, getDirectionUp());
-		m_rotationMatrix = glm::rotate(m_rotationMatrix, -m_rotation.z, getDirectionFront());
-#endif // VR_ENABLED
-
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, eulerRotation.x, vec3(1, 0, 0));
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, eulerRotation.y, vec3(0, 1, 0));
+		m_rotationMatrix = glm::rotate(m_rotationMatrix, eulerRotation.z, vec3(0, 0, 1));
 		m_rotationChanged = false;
 	}
 
@@ -119,7 +108,7 @@ vec2 Camera::getZRange()
 vec3 Camera::getDirectionFront()
 {
 	vec4 temp(0.0f, 0.0f, -1.0f, 1.0f);
-	temp = glm::mat4_cast(quat(m_rotation)) * temp;
+	temp = glm::mat4_cast(m_rotation) * temp;
 	temp /= temp.w;
 	vec3 result(temp.x, temp.y, temp.z);
 	return glm::normalize(result);

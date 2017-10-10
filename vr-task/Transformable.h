@@ -24,7 +24,8 @@ public:
 	virtual void rotate(const vec3& eulerAngles);
 	virtual void setRotation(float x, float y, float z);
 	virtual void setRotation(const vec3& eulerAngles);
-	vec3 getRotation() const;
+	virtual void setRotation(const quat& rotation);
+	quat getRotation() const;
 
 	void scale(float s);
 	void scale(float x, float y, float z);
@@ -46,7 +47,7 @@ protected:
 	mat4 m_scaleMatrix;
 
 	vec3 m_position;
-	vec3 m_rotation;
+	quat m_rotation;
 	vec3 m_scale;
 
 	bool m_positionChanged;

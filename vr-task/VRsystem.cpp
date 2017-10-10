@@ -106,7 +106,7 @@ vec3 VRsystem::getDevicePosition(DeviceIndex device)
 	return result;
 }
 
-vec3 VRsystem::getDeviceRotation(DeviceIndex device)
+quat VRsystem::getDeviceRotation(DeviceIndex device)
 {
 	const mat4& m = m_trackedDeviceMatrices[device];
 
@@ -120,7 +120,7 @@ vec3 VRsystem::getDeviceRotation(DeviceIndex device)
 	rotation.y = copysign(rotation.y, m[0][2] - m[2][0]);
 	rotation.z = copysign(rotation.z, m[1][0] - m[0][1]);
 
-	return glm::eulerAngles(rotation);
+	return rotation;
 }
 
 mat4 VRsystem::getDeviceTransformation(DeviceIndex device)

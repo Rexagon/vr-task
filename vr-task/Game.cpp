@@ -33,8 +33,10 @@ void Game::onInit()
 	m_leftEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
 	m_rightEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
 
-	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture());
-	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture());
+	Log::write(m_leftEyeBuffer->getColorTexture().getSize().y);
+
+	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture(), true);
+	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture(), true);
 
 	onResize(vec2(windowSize.x, windowSize.y));
 
@@ -71,7 +73,7 @@ void Game::onUpdate(const float dt)
 		DeviceIndex hmdDeviceIndex = VRsystem::getHmdDeviceIndex();
 
 		vec3 position = VRsystem::getDevicePosition(hmdDeviceIndex) * 10.0f;
-		vec3 rotation = VRsystem::getDeviceRotation(hmdDeviceIndex);
+		quat rotation = VRsystem::getDeviceRotation(hmdDeviceIndex);
 
 		m_leftEye->setPosition(position);
 		m_leftEye->setRotation(rotation);
@@ -109,8 +111,8 @@ void Game::onUpdate(const float dt)
 	if (Input::getMouse(MouseButton::Right)) {
 		vec2 mouseDelta = Input::getMouseDeltaPosition();
 		if (mouseDelta != vec2()) {
-			m_camera->rotate(0.0f, -mouseDelta.x * dt, 0.0f);
-			m_camera->rotate(-mouseDelta.y * dt, 0.0f, 0.0f);
+			m_camera->rotate(mouseDelta.y * dt, mouseDelta.x * dt, 0.0f);
+			//m_camera->rotate(-mouseDelta.y * dt, 0.0f, 0.0f);
 		}
 	}
 
@@ -157,11 +159,8 @@ void Game::onDraw(const float dt)
 	vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
 	vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeBuffer);
 
-	glFlush();
-	glFinish();
-
-	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture(), true);
-	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture(), true);
+	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture());
+	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture());
 
 	Core::getWindow().pushGLStates();
 
@@ -182,6 +181,9 @@ void Game::onResize(const vec2 & windowSize)
 	glViewport(0, 0, static_cast<int>(windowSize.x), static_cast<int>(windowSize.y));
 
 #ifdef VR_ENABLED
+	Core::getWindow().setView(sf::View(sf::FloatRect(0.f, 0.f, windowSize.x,
+		windowSize.y)));
+
 
 	sf::Vector2f halfSize = sf::Vector2f(static_cast<float>(windowSize.x) / 2.0f, static_cast<float>(windowSize.y));
 	
@@ -229,6 +231,8 @@ void Game::initBoard()
 		BISHOP,
 		PAWN
 	};
+
+
 }
 
 void Game::drawScene()

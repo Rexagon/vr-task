@@ -54,8 +54,7 @@ void Body::update(const float dt)
 	}
 
 	m_physicsData->getMotionState()->getWorldTransform(transform);
-	vec3 rotation;
-	transform.getRotation().getEulerZYX(rotation.z, rotation.y, rotation.x);
+	quat rotation = toGLM(transform.getRotation());
 	if (rotation != m_rotation) {
 		m_rotation = rotation;
 		m_rotationChanged = true;

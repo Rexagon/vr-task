@@ -44,5 +44,7 @@ private:
 
 vec3 toGLM(const btVector3& vec);
 vec4 toGLM(const btVector4& vec);
+quat toGLM(const btQuaternion& rotation);
 btVector3 toBT(const vec3& vec);
 btVector4 toBT(const vec4& vec);
+btQuaternion toBT(const quat& rotation);

@@ -28,7 +28,7 @@ public:
 	static bool getButtonUp(DeviceIndex device, Button button);
 
 	static vec3 getDevicePosition(DeviceIndex device);
-	static vec3 getDeviceRotation(DeviceIndex device);
+	static quat getDeviceRotation(DeviceIndex device);
 	static mat4 getDeviceTransformation(DeviceIndex device);
 	
 	static bool isHmdConnected();

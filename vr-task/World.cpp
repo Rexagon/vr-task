@@ -114,6 +114,11 @@ vec4 toGLM(const btVector4 & vec)
 	return vec4(vec.x(), vec.y(), vec.z(), vec.w());
 }
 
+quat toGLM(const btQuaternion & rotation)
+{
+	return quat(rotation.w(), rotation.x(), rotation.y(), rotation.z());
+}
+
 btVector3 toBT(const vec3 & vec)
 {
 	return btVector3(vec.x, vec.y, vec.z);
@@ -122,4 +127,9 @@ btVector3 toBT(const vec3 & vec)
 btVector4 toBT(const vec4 & vec)
 {
 	return btVector4(vec.x, vec.y, vec.z, vec.w);
+}
+
+btQuaternion toBT(const quat & rotation)
+{
+	return btQuaternion(rotation.x, rotation.y, rotation.z, rotation.w);
 }

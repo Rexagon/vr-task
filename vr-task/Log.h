@@ -39,6 +39,7 @@ public:
 		writeToStream(m_file, arg, args...);
 		writeToStream(std::cout, arg, args...);
 	}
+
 private:
 	// One magic function to 
 	template<class Arg, class... Args>
