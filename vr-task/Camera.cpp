@@ -253,8 +253,8 @@ VRCamera::VRCamera(vr::EVREye eye, float nearZ, float farZ) :
 mat4 VRCamera::getPositionMatrix()
 {
 	if (m_positionChanged) {
-		m_positionMatrix = toGLM(vr::VRSystem()->GetEyeToHeadTransform(m_eye)) *
-			glm::translate(mat4(1.0f), -m_position);
+		m_positionMatrix = glm::translate(mat4(1.0f), -m_position) * 
+			toGLM(vr::VRSystem()->GetEyeToHeadTransform(m_eye));
 		m_positionChanged = false;
 	}
 

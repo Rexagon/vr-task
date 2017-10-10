@@ -14,6 +14,9 @@ public:
 	void onResize(const vec2& windowSize) override;
 
 private:
+	void initResources();
+	void initBoard();
+
 	void drawScene();
 
 	std::unique_ptr<SkyboxRenderer> m_skyboxRenderer;
@@ -25,7 +28,7 @@ private:
 	Body* m_island;
 	Body* m_table;
 
-	std::vector<Body*> m_test;
+	std::vector<Body*> m_figures;
 
 #ifdef VR_ENABLED
 

@@ -4,15 +4,7 @@
 
 void Game::onInit()
 {
-	ResourceManager::bind<MeshFactory>("shogiban", "models/shogiban.obj");
-	ResourceManager::bind<MeshFactory>("island", "models/island.obj");
-	ResourceManager::bind<MeshFactory>("table", "models/table.obj");
-	ResourceManager::bind<MeshFactory>("figure", "models/figure.obj");
-
-	ResourceManager::bind<TextureFactory>("shogiban", "textures/shogiban.png");
-	ResourceManager::bind<TextureFactory>("island", "textures/island.png");
-	ResourceManager::bind<TextureFactory>("table", "textures/table.png");
-	ResourceManager::bind<TextureFactory>("figure", "textures/figure_lance.png");
+	initResources();
 
 	m_skyboxRenderer = std::make_unique<SkyboxRenderer>();
 	m_bodyRenderer = std::make_unique<BodyRenderer>();
@@ -38,8 +30,8 @@ void Game::onInit()
 	m_leftEye = std::make_unique<VRCamera>(vr::Eye_Left);
 	m_rightEye = std::make_unique<VRCamera>(vr::Eye_Right);
 
-	m_leftEyeBuffer = std::make_unique<FrameBuffer>(VRsystem::getRenderTargetSize());
-	m_rightEyeBuffer = std::make_unique<FrameBuffer>(VRsystem::getRenderTargetSize());
+	m_leftEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
+	m_rightEyeBuffer = std::make_unique<FrameBuffer>(uvec2(1080, 1200));
 
 	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture());
 	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture());
@@ -77,6 +69,7 @@ void Game::onUpdate(const float dt)
 
 	if (VRsystem::isHmdConnected()) {
 		DeviceIndex hmdDeviceIndex = VRsystem::getHmdDeviceIndex();
+
 		vec3 position = VRsystem::getDevicePosition(hmdDeviceIndex) * 10.0f;
 		vec3 rotation = VRsystem::getDeviceRotation(hmdDeviceIndex);
 
@@ -122,12 +115,12 @@ void Game::onUpdate(const float dt)
 	}
 
 	if (Input::getMouseDown(MouseButton::Left)) {
-		m_test.push_back(m_world.createBody(ResourceManager::get<Mesh>("figure"), 5.0f));
-		m_test.back()->setPosition(m_camera->getDirectionFront() + m_camera->getPosition());
-		m_test.back()->setDiffuseTexture(ResourceManager::get<sf::Texture>("figure"));
-		m_test.back()->getDiffuseTexture()->setSmooth(true);
-		m_test.back()->getPhysicsData()->activate(true);
-		m_test.back()->getPhysicsData()->applyCentralImpulse(toBT(m_camera->getDirectionFront()) * 100.0f);
+		m_figures.push_back(m_world.createBody(ResourceManager::get<Mesh>("figure"), 5.0f));
+		m_figures.back()->setPosition(m_camera->getDirectionFront() + m_camera->getPosition());
+		m_figures.back()->setDiffuseTexture(ResourceManager::get<sf::Texture>("figure"));
+		m_figures.back()->getDiffuseTexture()->setSmooth(true);
+		m_figures.back()->getPhysicsData()->activate(true);
+		m_figures.back()->getPhysicsData()->applyCentralImpulse(toBT(m_camera->getDirectionFront()) * 100.0f);
 	}
 
 #endif // VR_ENABLED
@@ -149,15 +142,14 @@ void Game::onDraw(const float dt)
 	drawScene();
 	m_rightEyeBuffer->unbind();
 
-
-	vr::Texture_t leftEyeTexture = {
-		(void*)&m_leftEyeBuffer->getColorTexture(),
+	static vr::Texture_t leftEyeTexture = {
+		(void*)(uintptr_t)m_leftEyeBuffer->getColorTexture().getNativeHandle(),
 		vr::TextureType_OpenGL,
 		vr::ColorSpace_Gamma
 	};
 
-	vr::Texture_t rightEyeBuffer = {
-		(void*)&m_rightEyeBuffer->getColorTexture(),
+	static vr::Texture_t rightEyeBuffer = {
+		(void*)(uintptr_t)m_rightEyeBuffer->getColorTexture().getNativeHandle(),
 		vr::TextureType_OpenGL,
 		vr::ColorSpace_Gamma
 	};
@@ -165,6 +157,19 @@ void Game::onDraw(const float dt)
 	vr::VRCompositor()->Submit(vr::Eye_Left, &leftEyeTexture);
 	vr::VRCompositor()->Submit(vr::Eye_Right, &rightEyeBuffer);
 
+	glFlush();
+	glFinish();
+
+	m_leftEyeDebugSprite.setTexture(&m_leftEyeBuffer->getColorTexture(), true);
+	m_rightEyeDebugSprite.setTexture(&m_rightEyeBuffer->getColorTexture(), true);
+
+	Core::getWindow().pushGLStates();
+
+	Core::getWindow().clear();
+	Core::getWindow().draw(m_leftEyeDebugSprite);
+	Core::getWindow().draw(m_rightEyeDebugSprite);
+
+	Core::getWindow().popGLStates();
 #else
 
 	drawScene();
@@ -189,6 +194,43 @@ void Game::onResize(const vec2 & windowSize)
 #endif
 }
 
+void Game::initResources()
+{
+	ResourceManager::bind<MeshFactory>("shogiban", "models/shogiban.obj");
+	ResourceManager::bind<MeshFactory>("island", "models/island.obj");
+	ResourceManager::bind<MeshFactory>("table", "models/table.obj");
+	ResourceManager::bind<MeshFactory>("figure", "models/figure.obj");
+
+	ResourceManager::bind<TextureFactory>("shogiban", "textures/shogiban.png");
+	ResourceManager::bind<TextureFactory>("island", "textures/island.png");
+	ResourceManager::bind<TextureFactory>("table", "textures/table.png");
+
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_kingw.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_kingb.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_gold.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_silver.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_knight.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_lance.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_rook.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_bishop.png");
+	ResourceManager::bind<TextureFactory>("figure", "textures/figure_pawn.png");
+}
+
+void Game::initBoard()
+{
+	enum FigureType {
+		KINGB,
+		KINGW,
+		GOLD,
+		SILVER,
+		KNIGHT,
+		LANCE,
+		ROOK,
+		BISHOP,
+		PAWN
+	};
+}
+
 void Game::drawScene()
 {
 	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -199,7 +241,7 @@ void Game::drawScene()
 	m_bodyRenderer->draw(m_island);
 	m_bodyRenderer->draw(m_table);
 
-	for (auto& test : m_test) {
+	for (auto& test : m_figures) {
 		m_bodyRenderer->draw(test);
 	}
 }

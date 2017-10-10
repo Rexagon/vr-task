@@ -40,6 +40,8 @@ void VRsystem::reset()
 
 void VRsystem::handleEvents()
 {
+	vr::VRCompositor()->WaitGetPoses(&m_trackedDevicePoses[0], vr::k_unMaxTrackedDeviceCount, NULL, 0);
+
 	vr::VREvent_t event;
 	while (m_system->PollNextEvent(&event, sizeof(event))) {
 		processEvent(event);
